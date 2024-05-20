@@ -12,7 +12,8 @@ const bodyParser = require("body-parser");
 
 app.use(bodyParser.json());
 app.use(cors({
-    origin: 'https://mikebot-frontend1.vercel.app'
+    // origin: 'https://mikebot-frontend1.vercel.app/'
+    origin: 'http://localhost:3000',
 }));
 
 var corsOptions = {
@@ -20,29 +21,24 @@ var corsOptions = {
     optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
-// const mongoose = require('mongoose');
-// const User = require("./models/user");
-
-// mongoose.connect('mongodb://95.216.227.115:27017/', {
-//     dbName: 'mikeplaybot',
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true
-// }, err => err ? console.log(err) : console.log('mongodb connected'));
-
 import { collection, addDoc, getDocs, updateDoc, doc } from 'firebase/firestore';
-// app.get("/", cors(corsOptions), async (req, res) => {
-//     const data = await User.find();
-//     console.log(data);
-// });
-
 app.post("/findUser", cors(corsOptions), async (req, res) => {
     try {
         const users = await getDocs(collection(db, 'users'));
         var isUserExist = false;
-        users.forEach((user) => {
+        users.forEach(async (user) => {
             if (user.data().name === req.body.name) {
                 isUserExist = true;
-                res.send({ user: user.data(), status: 'success'});
+                let data = user.data();
+                if (user.data().timestamp == 0) { /// initialize timestamp
+                    const docRef = doc(db, 'users', user.id);
+                    data = {
+                        ...data,
+                        timestamp: new Date()
+                    };
+                    await updateDoc(docRef, data);
+                }
+                res.send({ user: data, status: 'success'});
                 return;
             }
         })
