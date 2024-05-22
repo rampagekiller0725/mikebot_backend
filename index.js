@@ -10,10 +10,17 @@ const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser");
 
+const { TelegramClient } = require('telegram');
+const { StringSession } = require('telegram/sessions');
+const { Api } = require('telegram/tl');
+
+const session = new StringSession('');
+const client = new TelegramClient(session, 29936458, "879c63407ac671edb0f36e98aed1a077", { connectionRetries: 5 });
+
 app.use(bodyParser.json());
 app.use(cors({
-    origin: 'https://mikebot-frontend1.vercel.app'
-    // origin: 'http://localhost:3000',
+    // origin: 'https://mikebot-frontend1.vercel.app/'
+    origin: 'http://localhost:3000',
 }));
 
 var corsOptions = {
@@ -66,6 +73,42 @@ app.post("/updateUser", cors(corsOptions), async (req, res) => {
     } catch (err) {
         console.log(err);
         res.send({ status: 'failed' });
+    }
+});
+
+app.post('/checkParticipant', cors(corsOptions), async (req, res) => {
+    try {
+        await client.start({
+            botAuthToken: "7054392482:AAG47au7xGVg4qNjpH-9uTHUHdGNdZLkvd0"
+        });
+        await client.connect();
+        const result = await client.invoke(
+            new Api.channels.GetParticipant({
+                channel: req.body.groupname,
+                participant: req.body.username
+            })
+        )
+        res.send({ result: result, status: 'success' });
+    } catch(err) {
+        console.log(err);
+        res.send({ status: 'failed' });
+    }
+});
+
+app.post('/invite', cors(corsOptions), async (req, res) => {
+    try {
+        await client.start({
+            botAuthToken: "7054392482:AAG47au7xGVg4qNjpH-9uTHUHdGNdZLkvd0"
+        });
+        await client.connect();
+        let content = 'Hello ' + req.body.username + '!\n';
+        content += "Let's play with me, you're invited by " + req.body.inviter;
+        console.log(req.body.username);
+        await client.sendMessage('@'+req.body.username, {message: content});
+        res.send({ status: "success" });
+    } catch (err) {
+        console.log(err);
+        res.send({ status: "failed" });
     }
 })
 app.listen(4000, () => {
