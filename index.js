@@ -19,8 +19,8 @@ const client = new TelegramClient(session, 29936458, "879c63407ac671edb0f36e98ae
 
 app.use(bodyParser.json());
 app.use(cors({
-    // origin: 'https://mikebot-frontend1.vercel.app/'
-    origin: 'http://localhost:3000',
+    origin: 'https://mikebot-frontend1.vercel.app/'
+    // origin: 'http://localhost:3000',
 }));
 
 var corsOptions = {
