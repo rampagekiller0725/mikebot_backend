@@ -12,7 +12,7 @@ const bodyParser = require("body-parser");
 
 app.use(bodyParser.json());
 app.use(cors({
-    origin: 'https://mikebot-frontend1.vercel.app/'
+    origin: 'https://mikebot-frontend1.vercel.app'
     // origin: 'http://localhost:3000',
 }));
 
