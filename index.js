@@ -91,3 +91,6 @@ app.post('/checkParticipant', cors(corsOptions), async (req, res) => {
 app.listen(4000, () => {
     console.log("node is running on 4000");
 })
+
+
+module.exports = app;
